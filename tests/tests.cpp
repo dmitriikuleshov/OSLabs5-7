@@ -1,3 +1,4 @@
+#include "balanced_tree.hpp"
 #include "zmq_functions.hpp"
 #include <gtest/gtest.h>
 #include <zmq.hpp>
@@ -19,7 +20,6 @@ class ZeroMQTest : public ::testing::Test {
     }
 };
 
-// Test send_message and receive_message
 TEST_F(ZeroMQTest, SendAndReceiveMessage) {
     zmq::socket_t server_socket(context, zmq::socket_type::rep);
     int port = bind(server_socket, 0);
@@ -39,7 +39,6 @@ TEST_F(ZeroMQTest, SendAndReceiveMessage) {
     unbind(server_socket, port);
 }
 
-// Test connect and disconnect
 TEST_F(ZeroMQTest, ConnectSocket) {
     zmq::socket_t server_socket(context, zmq::socket_type::rep);
     int port = bind(server_socket, 0);
@@ -62,7 +61,6 @@ TEST_F(ZeroMQTest, DisconnectSocket) {
     unbind(server_socket, port);
 }
 
-// Test bind and unbind
 TEST_F(ZeroMQTest, BindSocket) {
     zmq::socket_t server_socket(context, zmq::socket_type::rep);
 
@@ -94,6 +92,58 @@ TEST_F(ZeroMQTest, BindCollision) {
     unbind(server_socket1, port1);
     unbind(server_socket2, port2);
 }
+
+class BalancedTreeTest : public ::testing::Test {
+  protected:
+    BalancedTree tree;
+
+    void SetUp() override {
+        // Optional setup before each test
+    }
+
+    void TearDown() override {
+        // Optional cleanup after each test
+    }
+};
+
+TEST_F(BalancedTreeTest, AddAndExist) {
+    tree.AddInTree(1, -1);
+    tree.AddInTree(2, 1);
+    tree.AddInTree(3, 1);
+
+    EXPECT_TRUE(tree.Exist(1));
+    EXPECT_TRUE(tree.Exist(2));
+    EXPECT_TRUE(tree.Exist(3));
+    EXPECT_FALSE(tree.Exist(4));
+}
+
+TEST_F(BalancedTreeTest, AddDuplicateNodes) {
+    tree.AddInTree(1, -1);
+    tree.AddInTree(1, -1); // Attempt to add duplicate
+
+    EXPECT_EQ(tree.ids.size(), 1); // Ensure duplicates are not added
+}
+
+TEST_F(BalancedTreeTest, RemoveNode) {
+    tree.AddInTree(1, -1);
+    tree.AddInTree(2, 1);
+    tree.RemoveFromRoot(2);
+
+    EXPECT_FALSE(tree.Exist(2));
+}
+
+TEST_F(BalancedTreeTest, RemoveSubtree) {
+    tree.AddInTree(1, -1);
+    tree.AddInTree(2, 1);
+    tree.AddInTree(3, 2);
+
+    tree.RemoveFromRoot(2);
+
+    EXPECT_FALSE(tree.Exist(2));
+    EXPECT_FALSE(tree.Exist(3));
+}
+
+TEST_F(BalancedTreeTest, EmptyTree) { EXPECT_EQ(tree.FindID(), -1); }
 
 int main(int argc, char **argv) {
 

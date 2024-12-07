@@ -1,7 +1,7 @@
 #pragma once
 #include <bits/stdc++.h>
 #include <zmq.hpp>
-const int MAIN_PORT = 5050;
+const int MAIN_PORT = 6040;
 
 void send_message(zmq::socket_t &socket, const std::string &msg) {
     zmq::message_t message(msg.size());
@@ -36,17 +36,26 @@ void disconnect(zmq::socket_t &socket, int port) {
 }
 
 int bind(zmq::socket_t &socket, int id) {
+    const int max_retries = 1000; // Maximum number of ports to try
     int port = MAIN_PORT + id;
-    std::string address = "tcp://127.0.0.1:" + std::to_string(port);
-    while (1) {
+    std::string address;
+    for (int i = 0; i < max_retries; ++i) {
         try {
+            address = "tcp://127.0.0.1:" + std::to_string(port);
             socket.bind(address);
-            break;
+            return port; // Successfully bound
+        } catch (const zmq::error_t &e) {
+            // Handle ZeroMQ-specific errors if needed
+            port++; // Try the next port
         } catch (...) {
-            port++;
+            // Catch any other exceptions
+            throw std::runtime_error("Unknown error occurred during bind");
         }
     }
-    return port;
+
+    // If we exhaust retries, throw an exception
+    throw std::runtime_error("Error: Unable to bind to a port after " +
+                             std::to_string(max_retries) + " attempts");
 }
 
 void unbind(zmq::socket_t &socket, int port) {
