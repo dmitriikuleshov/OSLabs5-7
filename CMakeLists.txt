@@ -17,12 +17,12 @@ set(TEST_DIR "${CMAKE_SOURCE_DIR}/tests")
 include(FetchContent)
 
 # Загружаем ZeroMQ
-FetchContent_Declare(
-  zmq
-  GIT_REPOSITORY https://github.com/zeromq/libzmq.git
-  GIT_TAG v4.3.4
-)
-FetchContent_MakeAvailable(zmq)
+# FetchContent_Declare(
+#   zmq
+#   GIT_REPOSITORY https://github.com/zeromq/libzmq.git
+#   GIT_TAG v4.3.4
+# )
+# FetchContent_MakeAvailable(zmq)
 
 # Загружаем cppzmq (обертка для ZeroMQ)
 # FetchContent_Declare(
@@ -37,17 +37,17 @@ include_directories(include)
 
 # Add executables
 add_executable(server ${SRC_DIR}/server.cpp)
-add_executable(calculation_node ${SRC_DIR}/calculation_node.cpp)
+add_executable(calc ${SRC_DIR}/calculation_node.cpp)
 
 # Link ZeroMQ library and cppzmq to executables
 target_include_directories(server PRIVATE ${cppzmq_SOURCE_DIR})
-target_include_directories(calculation_node PRIVATE ${cppzmq_SOURCE_DIR})
+target_include_directories(calc PRIVATE ${cppzmq_SOURCE_DIR})
 
 target_link_libraries(server PRIVATE zmq)
-target_link_libraries(calculation_node PRIVATE zmq)
+target_link_libraries(calc PRIVATE zmq)
 
 # Clean target
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "server;calculation_node")
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "server;calc")
 
 # Find and include GTest
 find_package(GTest QUIET)

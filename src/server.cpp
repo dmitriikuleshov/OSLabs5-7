@@ -1,6 +1,6 @@
-#include "../include/balanced_tree.hpp"
-#include "../include/calculation_node.hpp"
-#include "../include/zmq_functions.hpp"
+#include "balanced_tree.hpp"
+#include "calculation_node.hpp"
+#include "zmq_functions.hpp"
 #include <bits/stdc++.h>
 
 int main() {
